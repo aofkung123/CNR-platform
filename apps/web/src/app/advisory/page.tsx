@@ -16,6 +16,7 @@ import {
 import { BRANDS } from '@/config/brands';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
+import { useGallery } from '@/lib/useGallery';
 import './advisory.css';
 
 const SERVICES = [
@@ -53,6 +54,14 @@ const POLICIES = [
 export default function AdvisoryPage() {
   const brand = BRANDS.nr_advisory;
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
+
+  // Gallery: Combine static images with DB images
+  const galleryAwards = useGallery('nr_advisory', 'AWARDS');
+  const staticAwards  = ['cer4.png', 'cer1.jpg', 'cer3.jpg', 'cer2.jpg'];
+  const activeAwards = [
+    ...staticAwards.map(img => ({ src: `/images/advisory/${img}`, caption: null })),
+    ...galleryAwards.map(g => ({ src: g.imageUrl, caption: g.caption }))
+  ];
 
   return (
     <div className="advisory-page" data-brand="nr_advisory">
@@ -161,9 +170,9 @@ export default function AdvisoryPage() {
               <div className="divider mx-auto"></div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {['cer4.png', 'cer1.jpg', 'cer3.jpg', 'cer2.jpg'].map((img, i) => (
+              {activeAwards.map((award, i) => (
                 <div key={i} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 aspect-[3/4] relative overflow-hidden group">
-                  <Image src={`/images/advisory/${img}`} alt={`Award ${i+1}`} fill className="object-contain p-2 group-hover:scale-110 transition-transform" />
+                  <Image src={award.src} alt={award.caption ?? `Award ${i+1}`} fill className="object-contain p-2 group-hover:scale-110 transition-transform" />
                 </div>
               ))}
             </div>

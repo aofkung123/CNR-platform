@@ -87,9 +87,10 @@ export default function AdminPostsPage() {
           <p className="text-xs text-gray-400 mt-1">News Management System</p>
         </div>
         {[
-          { href: '/admin',           label: 'Dashboard',     icon: '📊' },
+          { href: '/admin',           label: 'Dashboard',       icon: '📊' },
           { href: '/admin/posts',     label: 'จัดการข่าว',   icon: '📰' },
           { href: '/admin/posts/new', label: 'เพิ่มข่าวใหม่', icon: '✏️' },
+          { href: '/admin/gallery',   label: 'จัดการรูปภาพ', icon: '🖼️' },
         ].map((item) => (
           <Link
             key={item.href}

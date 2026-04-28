@@ -111,6 +111,40 @@ model NewsArticle {
 }
 
 // ============================================================
+// GalleryImage Model — ระบบจัดการรูปภาพในหัวข้อต่างๆ
+// ============================================================
+
+enum GallerySite {
+  cnr_group
+  cac_audit
+  nr_advisory
+  nr_accounting
+  model_mix
+}
+
+enum GallerySection {
+  TESTIMONIALS
+  AWARDS
+  INDUSTRIES
+  CERTIFICATIONS
+}
+
+model GalleryImage {
+  id         String         @id @default(cuid())
+  site       GallerySite    // เว็บไซต์ที่รูปนี้สังกัด
+  section    GallerySection // หัวข้อ/section บนเว็บ
+  imageUrl   String         @db.VarChar(1000) // S3 public URL
+  imageKey   String         @db.VarChar(1000) // S3 key สำหรับลบ
+  caption    String?        @db.VarChar(500)  // คำอธิบายรูป (optional)
+  sortOrder  Int            @default(0)       // ลำดับการแสดง
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@index([site, section, sortOrder])
+  @@map("gallery_images")
+}
+
+// ============================================================
 // Post Model — ระบบจัดการข่าวสาร (News Management System)
 // ============================================================
 

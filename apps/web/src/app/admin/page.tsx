@@ -8,7 +8,7 @@ import {
 } from 'recharts';
 import {
   LayoutDashboard, FileText, PlusCircle, Eye, TrendingUp,
-  ChevronRight, Users, BarChart2,
+  ChevronRight, Users, BarChart2, Images,
 } from 'lucide-react';
 
 // ─── Types ────────────────────────────────────────────────────
@@ -99,6 +99,7 @@ export default function AdminDashboard() {
           { href: '/admin',          icon: <LayoutDashboard size={18} />, label: 'Dashboard'   },
           { href: '/admin/posts',    icon: <FileText size={18} />,        label: 'จัดการข่าว' },
           { href: '/admin/posts/new',icon: <PlusCircle size={18} />,      label: 'เพิ่มข่าวใหม่' },
+          { href: '/admin/gallery',  icon: <Images size={18} />,          label: 'จัดการรูปภาพ' },
         ].map((item) => (
           <Link
             key={item.href}

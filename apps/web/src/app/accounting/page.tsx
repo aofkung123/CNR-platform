@@ -17,6 +17,7 @@ import {
 import { BRANDS } from '@/config/brands';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
+import { useGallery } from '@/lib/useGallery';
 import './accounting.css';
 
 const SCOPES = [
@@ -87,6 +88,13 @@ export default function AccountingPage() {
   const brand = BRANDS.nr_accounting;
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
+
+  // Gallery: Combine static images with DB images
+  const galleryAwards = useGallery('nr_accounting', 'AWARDS');
+  const activeAwards  = [
+    ...AWARDS,
+    ...galleryAwards.map(g => ({ src: g.imageUrl, featured: false }))
+  ];
 
   return (
     <div className="accounting-page" data-brand="nr_accounting">
@@ -196,7 +204,7 @@ export default function AccountingPage() {
               <div className="divider mx-auto"></div>
             </div>
             <div className="award-bento">
-              {AWARDS.map((award, i) => (
+              {activeAwards.map((award, i) => (
                 <div 
                   key={i} 
                   className={`relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-100 ${award.featured ? 'md:col-span-2 md:row-span-2 aspect-square md:aspect-auto' : 'aspect-square'}`}

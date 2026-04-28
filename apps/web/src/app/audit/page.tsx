@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useGallery } from '@/lib/useGallery';
 import { 
   ArrowRight, 
   Phone, 
@@ -110,7 +111,19 @@ const AWARDS = [
 
 export default function AuditPage() {
   const brand = BRANDS.cac_audit;
-  const [speedDialOpen, setSpeedDialOpen] = useState(false);
+  const [speedDialOpen, setSpeedDialOpen] = useState(false);  // Gallery: Combine static images with DB images
+  const galleryIndustries = useGallery('cac_audit', 'INDUSTRIES');
+  const galleryAwards     = useGallery('cac_audit', 'AWARDS');
+
+  const activeIndustries = [
+    ...INDUSTRIES,
+    ...galleryIndustries.map(g => ({ label: g.caption ?? '', src: g.imageUrl }))
+  ];
+  const activeAwards = [
+    ...AWARDS,
+    ...galleryAwards.map(g => g.imageUrl)
+  ];
+
 
   return (
     <div className="audit-page" data-brand="cac_audit">
@@ -194,7 +207,7 @@ export default function AuditPage() {
               <div className="divider"></div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-              {INDUSTRIES.map((item, i) => (
+              {activeIndustries.map((item, i) => (
                 <div key={i} className="industry-card group">
                   <div className="aspect-[4/3] relative rounded-2xl overflow-hidden mb-3">
                     <img 
@@ -219,7 +232,7 @@ export default function AuditPage() {
               <div className="divider"></div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {AWARDS.map((src, i) => (
+              {activeAwards.map((src, i) => (
                 <div key={i} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 aspect-[3/4] relative">
                   <Image src={src} alt={`Award ${i+1}`} fill className="object-contain p-4" />
                 </div>

@@ -9,6 +9,7 @@ import { documentRouter } from './routes/documents';
 import { contactRouter } from './routes/contact';
 import { newsRouter } from './routes/news';
 import { postsRouter, statsRouter } from './routes/posts';
+import { galleryRouter } from './routes/gallery';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -36,6 +37,7 @@ app.use('/api/news', newsRouter);
 // v1 versioned routes
 app.use('/api/v1/posts', postsRouter);
 app.use('/api/v1/stats', statsRouter);
+app.use('/api/v1/gallery', galleryRouter);
 
 // ─── 404 ──────────────────────────────────────────────────
 app.use((_req, res) => {

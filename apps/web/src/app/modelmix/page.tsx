@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, ArrowRight, ExternalLink, Phone, MessageCirc
 import { BRANDS } from '@/config/brands';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
+import { useGallery } from '@/lib/useGallery';
 import './modelmix.css';
 
 // --- Hero Images ---
@@ -57,6 +58,13 @@ export default function ModelMixPage() {
   const [currentHero, setCurrentHero] = useState(0);
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
+
+  // Gallery: Combine static images with DB images
+  const galleryAwards = useGallery('model_mix', 'CERTIFICATIONS');
+  const activeAwards  = [
+    ...AWARDS,
+    ...galleryAwards.map(g => ({ src: g.imageUrl, alt: g.caption ?? 'ใบรับรอง', featured: false }))
+  ];
 
   // Auto-slide hero
   useEffect(() => {
@@ -178,7 +186,7 @@ export default function ModelMixPage() {
             </div>
 
             <div className="award-bento">
-              {AWARDS.map((award, i) => (
+              {activeAwards.map((award, i) => (
                 <div
                   key={i}
                   className={`award-card ${award.featured ? 'bento-featured' : 'bento-standard'}`}

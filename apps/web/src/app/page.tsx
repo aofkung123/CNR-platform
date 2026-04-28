@@ -22,6 +22,7 @@ import { BRANDS } from '@/config/brands';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 // import { NEWS } from '@/data/news'; // Removed static mock
+import { useGallery } from '@/lib/useGallery';
 import './cnrgroup.css';
 
 // --- Configuration Data (Extracted from legacy js/config.js) ---
@@ -80,6 +81,13 @@ export default function CNRGroupPage() {
   const [loading, setLoading] = useState(true);
   const [visibleNewsCount, setVisibleNewsCount] = useState(3);
 
+  // Gallery: Combine static images with DB images
+  const galleryTestimonials = useGallery('cnr_group', 'TESTIMONIALS');
+  const galleryAwards       = useGallery('cnr_group', 'AWARDS');
+  
+  const activeTestimonials  = [...TESTIMONIALS, ...galleryTestimonials.map(g => g.imageUrl)];
+  const activeAwards        = [...AWARDS, ...galleryAwards.map(g => g.imageUrl)];
+
   // Auto-slide hero
   useEffect(() => {
     const timer = setInterval(() => {
@@ -91,18 +99,18 @@ export default function CNRGroupPage() {
   // Auto-slide testimonial
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
+      setCurrentTestimonial((prev) => (prev + 1) % activeTestimonials.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [activeTestimonials.length]);
 
   // Auto-slide awards
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentAward((prev) => (prev + 1) % AWARDS.length);
+      setCurrentAward((prev) => (prev + 1) % activeAwards.length);
     }, 3500);
     return () => clearInterval(timer);
-  }, []);
+  }, [activeAwards.length]);
 
   // Fetch real news from API
   useEffect(() => {
@@ -251,7 +259,7 @@ export default function CNRGroupPage() {
                 <div className="testimonial-slider-wrap">
                   <button
                     className="testimonial-slider-btn prev"
-                    onClick={() => setCurrentTestimonial((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}
+                    onClick={() => setCurrentTestimonial((prev) => (prev - 1 + activeTestimonials.length) % activeTestimonials.length)}
                     aria-label="Previous testimonial"
                   >
                     <ChevronLeft size={20} />
@@ -262,7 +270,7 @@ export default function CNRGroupPage() {
                       className="testimonial-slider-track"
                       style={{ transform: `translateX(-${currentTestimonial * 100}%)` }}
                     >
-                      {TESTIMONIALS.map((src, i) => (
+                      {activeTestimonials.map((src, i) => (
                         <div key={i} className="testimonial-slide">
                           <img src={src} alt={`Testimonial ${i + 1}`} onClick={() => setLightbox(src)} />
                         </div>
@@ -272,14 +280,14 @@ export default function CNRGroupPage() {
 
                   <button
                     className="testimonial-slider-btn next"
-                    onClick={() => setCurrentTestimonial((prev) => (prev + 1) % TESTIMONIALS.length)}
+                    onClick={() => setCurrentTestimonial((prev) => (prev + 1) % activeTestimonials.length)}
                     aria-label="Next testimonial"
                   >
                     <ChevronRight size={20} />
                   </button>
 
                   <div className="testimonial-dots">
-                    {TESTIMONIALS.map((_, i) => (
+                    {activeTestimonials.map((_, i) => (
                       <button
                         key={i}
                         className={`testimonial-dot ${currentTestimonial === i ? 'active' : ''}`}
@@ -304,7 +312,7 @@ export default function CNRGroupPage() {
               <div className="testimonial-slider-wrap" style={{ maxWidth: '800px', margin: '0 auto' }}>
                 <button
                   className="testimonial-slider-btn prev"
-                  onClick={() => setCurrentAward((prev) => (prev - 1 + AWARDS.length) % AWARDS.length)}
+                  onClick={() => setCurrentAward((prev) => (prev - 1 + activeAwards.length) % activeAwards.length)}
                   style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}
                 >
                   <ChevronLeft size={20} />
@@ -315,7 +323,7 @@ export default function CNRGroupPage() {
                     className="testimonial-slider-track"
                     style={{ transform: `translateX(-${currentAward * 100}%)` }}
                   >
-                    {AWARDS.map((src, i) => (
+                    {activeAwards.map((src, i) => (
                       <div key={i} className="testimonial-slide" style={{ padding: '1rem' }}>
                         <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 border border-white/10 flex items-center justify-center aspect-video relative overflow-hidden group/award">
                           <Image 
@@ -333,14 +341,14 @@ export default function CNRGroupPage() {
 
                 <button
                   className="testimonial-slider-btn next"
-                  onClick={() => setCurrentAward((prev) => (prev + 1) % AWARDS.length)}
+                  onClick={() => setCurrentAward((prev) => (prev + 1) % activeAwards.length)}
                   style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}
                 >
                   <ChevronRight size={20} />
                 </button>
 
                 <div className="testimonial-dots">
-                  {AWARDS.map((_, i) => (
+                  {activeAwards.map((_, i) => (
                     <button
                       key={i}
                       className={`testimonial-dot ${currentAward === i ? 'active' : ''}`}
