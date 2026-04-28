@@ -1,0 +1,66 @@
+/* NR Group Accounting Specific Styles */
+
+.accounting-page {
+  --brand-primary: #1B6B3A;
+  --brand-primary-light: #2E9959;
+  --brand-primary-dark: #114828;
+  --brand-accent: #10B981;
+}
+
+.accounting-scope-card {
+  @apply bg-white rounded-3xl p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300;
+}
+
+
+/* --- Service Cards --- */
+.accounting-service-card {
+  @apply relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all duration-300;
+}
+
+.accounting-service-card:hover {
+  @apply -translate-y-2 shadow-2xl;
+  border-color: var(--brand-primary);
+}
+
+.service-card-header {
+  @apply h-32 overflow-hidden relative bg-gray-50 flex items-center justify-center p-4;
+}
+
+.service-card-header .emoji {
+  @apply text-5xl transition-transform duration-500;
+}
+
+.accounting-service-card:hover .service-card-header .emoji {
+  @apply scale-125;
+}
+
+.service-card-title {
+  @apply py-3 px-4 text-center font-bold text-white;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+}
+
+.service-card-body {
+  @apply p-6 bg-white border-t-4;
+  border-top-color: var(--brand-primary);
+}
+
+.accounting-quotation {
+  @apply py-16 text-white;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+}
+
+.btn-accent {
+  @apply inline-flex items-center gap-2 px-8 py-4 bg-[var(--brand-accent)] text-white font-bold rounded-full shadow-xl hover:scale-105 transition-transform;
+}
+
+.award-bento {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-4;
+}
+
+.divider {
+  @apply w-16 h-1.5 rounded-full mt-4 bg-[var(--brand-primary)];
+}
+
+.section-eyebrow {
+  @apply text-sm font-bold tracking-widest text-[var(--brand-primary)] uppercase;
+}

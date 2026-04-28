@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   CSS Custom Properties — Brand Theme System
+   Each page layout sets `data-brand="..."` on <html>,
+   and these variables update automatically.
+   ============================================================ */
+:root,
+[data-brand="cnr_group"] {
+  --brand-primary: #0B1F4B;       /* Navy Blue */
+  --brand-primary-light: #1A3A7A; /* Lighter Navy */
+  --brand-primary-dark: #070F25;  /* Darker Navy */
+  --brand-accent: #F97316;
+
+  --font-prompt: 'Prompt', sans-serif;
+
+  /* UI */
+  --foreground:         #1A1A2E;
+  --muted-foreground:   #6B7280;
+  --background:         #FFFFFF;
+  --section-bg:         #F8FAFC;
+  --card-bg:            #FFFFFF;
+  --border:             #E5E7EB;
+  --shadow:             0 4px 24px rgba(0,0,0,0.08);
+  --radius:             0.75rem;
+}
+
+[data-brand="cac_audit"] {
+  --brand-primary:       #1E5FA8;
+  --brand-primary-light: #2D7DD2;
+  --brand-primary-dark:  #154080;
+  --brand-accent:        #F97316;
+}
+
+[data-brand="nr_accounting"] {
+  --brand-primary:       #1B6B3A;
+  --brand-primary-light: #2E9959;
+  --brand-primary-dark:  #114828;
+  --brand-accent:        #10B981;
+}
+
+[data-brand="nr_advisory"] {
+  --brand-primary:       #3478AD;
+  --brand-primary-light: #4A9BD4;
+  --brand-primary-dark:  #235A8A;
+  --brand-accent:        #F59E0B;
+}
+
+[data-brand="model_mix"] {
+  --brand-primary:       #EA6B1F;
+  --brand-primary-light: #F4893F;
+  --brand-primary-dark:  #C45510;
+  --brand-accent:        #FBBF24;
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-prompt), sans-serif;
+  }
+
+  body {
+    @apply text-[var(--foreground)] bg-[var(--background)] antialiased;
+    font-family: var(--font-prompt), sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-prompt), sans-serif;
+    font-weight: 700;
+  }
+}
+
+/* ============================================================
+   Component Utilities
+   ============================================================ */
+@layer components {
+  /* ── Container ─────────────────────────────────────── */
+  .cnr-container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl w-full;
+  }
+
+  /* ── Section ───────────────────────────────────────── */
+  .cnr-section {
+    @apply py-16 md:py-24;
+  }
+
+  .cnr-section--bg {
+    background-color: var(--section-bg);
+  }
+
+  /* ── Section Header ────────────────────────────────── */
+  .section-eyebrow {
+    @apply text-xs font-semibold tracking-widest uppercase mb-2;
+    color: var(--brand-primary);
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-[var(--foreground)] leading-tight;
+  }
+
+  .section-desc {
+    @apply text-[var(--muted-foreground)] text-base md:text-lg leading-relaxed mt-3 max-w-2xl mx-auto;
+  }
+
+  /* ── Buttons ───────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white
+           transition-all duration-200 hover:brightness-110 hover:shadow-lg active:scale-95;
+    background-color: var(--brand-primary);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold
+           border-2 transition-all duration-200 hover:text-white active:scale-95;
+    border-color: var(--brand-primary);
+    color: var(--brand-primary);
+  }
+
+  .btn-outline:hover {
+    background-color: var(--brand-primary);
+  }
+
+  /* ── Card ──────────────────────────────────────────── */
+  .cnr-card {
+    @apply rounded-2xl bg-white p-6 transition-all duration-300
+           hover:-translate-y-1 hover:shadow-xl;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Navbar ────────────────────────────────────────── */
+  .site-header {
+    @apply sticky top-0 z-50 w-full py-5 px-4 sm:px-6
+           bg-white border-b border-[var(--border)];
+    transition: box-shadow 0.3s;
+  }
+
+  .site-header > .cnr-container {
+    position: relative;
+  }
+
+  .site-header nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .site-header.scrolled {
+    @apply shadow-md;
+  }
+
+  .nav-link {
+    @apply text-sm font-medium text-[var(--foreground)] px-3 py-1.5 rounded-lg
+           transition-colors duration-200 hover:text-[var(--brand-primary)] hover:bg-[var(--section-bg)];
+  }
+
+  .nav-link.active {
+    color: var(--brand-primary);
+    font-weight: 600;
+  }
+
+  /* ── Hero Section ──────────────────────────────────── */
+  .hero-section {
+    @apply relative min-h-[75vh] flex items-center overflow-hidden;
+    background: linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary) 60%, var(--brand-primary-light) 100%);
+  }
+
+  /* ── Service Card ──────────────────────────────────── */
+  .service-card {
+    @apply cnr-card flex flex-col items-center text-center gap-4 cursor-pointer;
+  }
+
+  .service-card__icon {
+    @apply w-16 h-16 rounded-2xl flex items-center justify-center text-white;
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-light) 100%);
+  }
+
+  /* ── Speed Dial (FAB) ──────────────────────────────── */
+  .speed-dial {
+    @apply fixed bottom-6 right-6 z-50 flex flex-col-reverse items-end gap-3;
+  }
+
+  .speed-dial__toggle {
+    @apply w-14 h-14 rounded-full text-white flex items-center justify-center
+           shadow-lg transition-all duration-300 hover:scale-110;
+    background-color: var(--brand-primary);
+  }
+
+  /* ── Form ──────────────────────────────────────────── */
+  .form-input {
+    @apply w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-white
+           text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]
+           outline-none transition-all duration-200
+           focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)];
+  }
+
+  /* ── Footer ────────────────────────────────────────── */
+  .site-footer {
+    @apply text-white py-8;
+    background-color: var(--brand-primary-dark);
+  }
+
+  /* ── Global Hero Slider (Standardized Size) ── */
+  .hero-slider {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/7;
+    min-height: 320px;
+    max-height: 500px;
+    background: var(--brand-primary-dark);
+    overflow: hidden;
+  }
+
+  @media (max-width: 1024px) {
+    .hero-slider {
+      aspect-ratio: 16/8;
+      min-height: 260px;
+      max-height: 380px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero-slider {
+      aspect-ratio: 4/3;
+      min-height: 220px;
+      max-height: 280px;
+    }
+  }
+}

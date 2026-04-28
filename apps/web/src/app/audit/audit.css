@@ -1,0 +1,62 @@
+/* CAC Audit Specific Styles */
+
+.audit-page {
+  --brand-primary: #1E5FA8;
+  --brand-primary-light: #2D7DD2;
+  --brand-primary-dark: #154080;
+  --brand-accent: #F97316;
+}
+
+
+/* --- Service Cards --- */
+.audit-service-card {
+  @apply relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all duration-300;
+}
+
+.audit-service-card:hover {
+  @apply -translate-y-2 shadow-2xl;
+  border-color: var(--brand-primary);
+}
+
+.service-card-header {
+  @apply h-40 overflow-hidden relative bg-gray-50 flex items-center justify-center p-6;
+}
+
+.service-card-header svg {
+  @apply w-full h-full object-contain transition-transform duration-500;
+}
+
+.audit-service-card:hover .service-card-header svg {
+  @apply scale-110;
+}
+
+.service-card-title {
+  @apply py-3 px-4 text-center font-bold text-white;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+}
+
+.service-card-body {
+  @apply p-6 bg-white border-t-4;
+  border-top-color: var(--brand-primary);
+}
+
+.audit-quotation {
+  @apply py-16 text-white;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+}
+
+.btn-white {
+  @apply inline-flex items-center gap-2 px-8 py-4 bg-white text-[var(--brand-primary)] font-bold rounded-full shadow-xl hover:scale-105 transition-transform;
+}
+
+.industry-card {
+  @apply flex flex-col items-center;
+}
+
+.divider {
+  @apply w-16 h-1.5 rounded-full mx-auto mt-4 bg-[var(--brand-primary)];
+}
+
+.section-eyebrow {
+  @apply text-sm font-bold tracking-widest text-[var(--brand-primary)] uppercase;
+}

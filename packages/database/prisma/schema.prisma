@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum DocumentCategory {
+  audit       // ตรวจสอบบัญชี (CAC Audit)
+  accounting  // บัญชี (NR Group Accounting)
+  advisory    // ที่ปรึกษา (NR Group Advisory)
+  modelmix    // อบรม/สัมมนา (Model Mix)
+  cnrgroup    // กลุ่มบริษัท CNR (Corporate)
+}
+
+enum CompanyBrand {
+  cac_audit
+  nr_accounting
+  nr_advisory
+  model_mix
+  cnr_group
+}
+
+enum PostCategory {
+  NEWS
+  INSIGHT
+  EVENT
+}
+
+enum PostDepartment {
+  audit
+  accounting
+  advisory
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// ============================================================
+// Document Model — เก็บข้อมูลเอกสารที่อัปโหลดไปยัง S3
+// ============================================================
+
+model Document {
+  id        String           @id @default(cuid())
+  filename  String           // ชื่อไฟล์ที่ผู้ใช้เห็น
+  category  DocumentCategory // ประเภทเอกสาร
+  s3Key     String           @unique // Key ใน S3 bucket (ใช้ delete / presigned URL)
+  mimeType  String           // เช่น "application/pdf", "image/jpeg"
+  fileSize  Int              // ขนาดไฟล์ (bytes)
+  year      Int              // ปีของเอกสาร (พ.ศ. หรือ ค.ศ.)
+  month     Int?             // เดือน (1-12, nullable ถ้าไม่ระบุเดือน)
+  brand     CompanyBrand     // บริษัทที่เอกสารนี้สังกัด
+  tags      String?          // Tag เพิ่มเติม (comma-separated)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([category, year, month])
+  @@index([brand, category])
+  @@map("documents")
+}
+
+// ============================================================
+// ContactSubmission Model — เก็บข้อความจาก Contact Form
+// ============================================================
+
+model ContactSubmission {
+  id        String       @id @default(cuid())
+  name      String
+  phone     String
+  email     String
+  subject   String
+  message   String       @db.Text
+  brand     CompanyBrand // เว็บไซต์ที่ส่งฟอร์มมา
+  isRead    Boolean      @default(false)
+  createdAt DateTime     @default(now())
+
+  @@index([brand, isRead])
+  @@map("contact_submissions")
+}
+
+// ============================================================
+// NewsArticle Model — บทความ/ข่าวสาร (legacy simple model)
+// ============================================================
+
+model NewsArticle {
+  id          String       @id @default(cuid())
+  title       String
+  slug        String       @unique
+  excerpt     String       @db.Text
+  content     String       @db.LongText
+  coverImage  String?      // S3 key หรือ URL รูปปก
+  brand       CompanyBrand
+  isPublished Boolean      @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([brand, isPublished, publishedAt])
+  @@map("news_articles")
+}
+
+// ============================================================
+// Post Model — ระบบจัดการข่าวสาร (News Management System)
+// ============================================================
+
+model Post {
+  id           String         @id @default(cuid())
+  title        String         @db.VarChar(500)
+  slug         String         @unique @db.VarChar(600)
+  summary      String         @db.Text
+  content      String         @db.LongText
+  thumbnailUrl String?        @db.VarChar(1000)   // S3 URL ของรูปปก
+  thumbnailKey String?        @db.VarChar(1000)   // S3 Key สำหรับลบไฟล์
+  category     PostCategory   @default(NEWS)
+  department   PostDepartment
+  status       PostStatus     @default(DRAFT)
+  viewCount    Int            @default(0)
+  publishedAt  DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([department, status])
+  @@index([category, status])
+  @@index([slug])
+  @@map("posts")
+}

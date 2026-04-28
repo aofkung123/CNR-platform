@@ -1,0 +1,89 @@
+name: cnr-platform
+
+services:
+  # ═══════════════════════════════════════════════
+  # 1. MariaDB Database
+  # ═══════════════════════════════════════════════
+  db:
+    image: mariadb:11.4
+    container_name: cnr_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-cnr_root_secret}
+      MYSQL_DATABASE: ${DB_NAME:-cnr_platform}
+      MYSQL_USER: ${DB_USER:-cnr_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-cnr_pass}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "3306:3306"   # expose for local dev access (Prisma Studio, etc.)
+    networks:
+      - cnr_network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ═══════════════════════════════════════════════
+  # 2. Node.js Express API
+  # ═══════════════════════════════════════════════
+  api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    container_name: cnr_api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 4000
+      DATABASE_URL: mysql://${DB_USER:-cnr_user}:${DB_PASSWORD:-cnr_pass}@db:3306/${DB_NAME:-cnr_platform}
+      AWS_REGION: ${AWS_REGION:-ap-southeast-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - "4000:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - cnr_network
+    volumes:
+      - ./apps/api/src:/app/apps/api/src   # hot-reload in dev
+
+  # ═══════════════════════════════════════════════
+  # 3. Next.js Web App
+  # ═══════════════════════════════════════════════
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+    container_name: cnr_web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      NEXT_PUBLIC_API_URL: http://api:4000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - cnr_network
+
+# ═══════════════════════════════════════════════
+# Named Volumes & Network
+# ═══════════════════════════════════════════════
+volumes:
+  db_data:
+    name: cnr_db_data
+
+networks:
+  cnr_network:
+    name: cnr_network
+    driver: bridge

@@ -1,0 +1,124 @@
+/* Model Mix Specific Styles — Extending the design system with premium aesthetics */
+
+.modelmix-page {
+  --modelmix-orange: #CD5420;
+  --modelmix-orange-dark: #a14118;
+  --modelmix-orange-light: #e07a3f;
+  --modelmix-glow: rgba(205, 84, 32, 0.2);
+}
+
+/* --- Bento Grid for Awards --- */
+.award-bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 200px;
+  gap: 1.5rem;
+}
+
+.bento-featured {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.bento-standard {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+@media (max-width: 1024px) {
+  .award-bento {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .award-bento {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 150px;
+    gap: 1rem;
+  }
+}
+
+.award-card {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.award-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  border-color: var(--modelmix-orange);
+}
+
+.award-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.award-card:hover img {
+  transform: scale(1.1);
+}
+
+/* --- Service Cards --- */
+.modelmix-service-card {
+  @apply relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all duration-300;
+}
+
+.modelmix-service-card:hover {
+  @apply -translate-y-2 shadow-2xl;
+  border-color: var(--modelmix-orange);
+}
+
+.service-card-header {
+  @apply h-40 overflow-hidden relative;
+}
+
+.service-card-header img {
+  @apply w-full h-full object-cover transition-transform duration-500;
+}
+
+.modelmix-service-card:hover .service-card-header img {
+  @apply scale-110;
+}
+
+.service-card-title {
+  @apply py-3 px-4 text-center font-bold text-white;
+  background: linear-gradient(135deg, var(--modelmix-orange) 0%, var(--modelmix-orange-dark) 100%);
+}
+
+.service-card-body {
+  @apply p-6 bg-gray-50 border-t-4;
+  border-top-color: var(--modelmix-orange);
+}
+
+/* --- Quotation Section --- */
+.quotation-section {
+  @apply relative py-16 overflow-hidden text-white;
+  background: linear-gradient(135deg, var(--modelmix-orange) 0%, var(--modelmix-orange-dark) 100%);
+}
+
+.quotation-section::before {
+  content: '';
+  @apply absolute inset-0 opacity-10;
+  background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* --- Navigation & Typography --- */
+.section-eyebrow-modelmix {
+  @apply text-sm font-bold tracking-widest uppercase mb-2;
+  color: var(--modelmix-orange);
+}
+
+.divider-modelmix {
+  @apply w-16 h-1.5 rounded-full mx-auto mt-4;
+  background-color: var(--modelmix-orange);
+}
