@@ -43,7 +43,7 @@ export function SiteHeader({ brand }: SiteHeaderProps) {
             alt={brand.name}
             width={220}
             height={72}
-            className="h-14 w-auto object-contain"
+            className="h-16 w-auto object-contain"
             priority
           />
         </Link>

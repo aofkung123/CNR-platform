@@ -51,7 +51,7 @@ export const BRANDS: Record<BrandKey, BrandConfig> = {
       accent: '#F59E0B',       // Amber gold
     },
     contact: {
-      phone: '02-635-5144',
+      phone: '084-282-4440',
       email: 'admin@cnrgroupcompany.com',
       lineId: '@cnrgroup',
       address: 'Park Silom Building ชั้น 14 ห้อง 1406 ถนนคอนแวนต์ แขวงสีลม เขตบางรัก กรุงเทพฯ 10500',
@@ -79,7 +79,7 @@ export const BRANDS: Record<BrandKey, BrandConfig> = {
       accent: '#F97316',       // Orange
     },
     contact: {
-      phone: '02-635-5144',
+      phone: '084-282-4440',
       email: 'admin@cac-audit.com',
       lineId: '@cac-audit',
       address: 'Park Silom Building ชั้น 14 ห้อง 1406 ถนนคอนแวนต์ แขวงสีลม เขตบางรัก กรุงเทพฯ 10500',
@@ -106,7 +106,7 @@ export const BRANDS: Record<BrandKey, BrandConfig> = {
       accent: '#10B981',       // Emerald
     },
     contact: {
-      phone: '02-635-5144',
+      phone: '084-282-4440',
       email: 'admin@nrgroupaccounting.com',
       lineId: '@nraccounting',
       address: 'Park Silom Building ชั้น 14 ห้อง 1406 ถนนคอนแวนต์ แขวงสีลม เขตบางรัก กรุงเทพฯ 10500',
@@ -133,7 +133,7 @@ export const BRANDS: Record<BrandKey, BrandConfig> = {
       accent: '#F59E0B',       // Gold
     },
     contact: {
-      phone: '02-635-5144',
+      phone: '084-282-4440',
       email: 'admin@nrgroupadvisory.com',
       lineId: '@nradvisory',
       address: 'Park Silom Building ชั้น 14 ห้อง 1406 ถนนคอนแวนต์ แขวงสีลม เขตบางรัก กรุงเทพฯ 10500',
@@ -161,7 +161,7 @@ export const BRANDS: Record<BrandKey, BrandConfig> = {
       accent: '#CD5420',
     },
     contact: {
-      phone: '02 635 5144',
+      phone: '084-282-4440',
       email: 'admin@cnrgroupcompany.com',
       lineId: '@cnrgroup',
       address: 'Park Silom Building ชั้น 14 ห้อง 1406 ถนนคอนแวนต์ แขวงสีลม เขตบางรัก กรุงเทพฯ 10500',

@@ -17,22 +17,22 @@ export function SiteFooter({ brand }: { brand: BrandConfig }) {
               alt={brand.name}
               width={160}
               height={54}
-              className="h-12 w-auto object-contain brightness-0 invert mb-6"
+              className="h-14 w-auto object-contain brightness-0 invert mb-6"
             />
             <div className="space-y-4">
-              <a href={`tel:${brand.contact.phone}`} className="flex items-center gap-3 text-white/70 text-sm hover:text-white transition-colors">
+              <a href={`tel:${brand.contact.phone}`} className="flex items-center gap-3 text-white/70 text-base hover:text-white transition-colors">
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
                   <Phone size={14} />
                 </div>
                 {brand.contact.phone}
               </a>
-              <a href={`mailto:${brand.contact.email}`} className="flex items-center gap-3 text-white/70 text-sm hover:text-white transition-colors">
+              <a href={`mailto:${brand.contact.email}`} className="flex items-center gap-3 text-white/70 text-base hover:text-white transition-colors">
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
                   <Mail size={14} />
                 </div>
                 {brand.contact.email}
               </a>
-              <div className="flex items-start gap-3 text-white/70 text-sm">
+              <div className="flex items-start gap-3 text-white/70 text-base">
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <MapPin size={14} />
                 </div>
@@ -43,7 +43,7 @@ export function SiteFooter({ brand }: { brand: BrandConfig }) {
 
           {/* Facebook Plugin (Specific to Model Mix or if FB configured) */}
           <div className="hidden lg:block lg:col-span-1">
-            <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Facebook</h4>
+            <h4 className="text-white font-bold mb-6 text-base uppercase tracking-wider">Facebook</h4>
             <div className="rounded-xl overflow-hidden bg-white h-[200px]">
               <iframe
                 src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(brand.contact.facebook)}&tabs=timeline&width=250&height=200&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true`}
@@ -60,7 +60,7 @@ export function SiteFooter({ brand }: { brand: BrandConfig }) {
 
           {/* LINE QR Code */}
           <div className="lg:col-span-1 text-center">
-            <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Line Official</h4>
+            <h4 className="text-white font-bold mb-6 text-base uppercase tracking-wider">Line Official</h4>
             <div className="inline-block p-2 bg-white rounded-2xl mb-3 shadow-lg hover:scale-110 transition-transform">
               <a href="https://line.me/ti/p/~@cnrgroup" target="_blank" rel="noopener noreferrer">
                 <Image
@@ -77,13 +77,13 @@ export function SiteFooter({ brand }: { brand: BrandConfig }) {
 
           {/* Quick Links */}
           <div className="lg:col-span-1">
-            <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Quick Links</h4>
+            <h4 className="text-white font-bold mb-6 text-base uppercase tracking-wider">Quick Links</h4>
             <div className="grid grid-cols-2 gap-y-3 gap-x-4">
               {['ประวัติ', 'บริการ', 'รีวิว', 'รางวัล', 'แผนที่', 'ติดต่อ'].map((label, i) => (
                 <a
                   key={i}
                   href={`#${['history', 'services', 'testimonial', 'awards', 'map', 'contact'][i]}`}
-                  className="text-white/70 text-sm hover:text-white transition-colors"
+                  className="text-white/70 text-base hover:text-white transition-colors"
                 >
                   {label}
                 </a>
@@ -92,7 +92,7 @@ export function SiteFooter({ brand }: { brand: BrandConfig }) {
           </div>
         </div>
 
-        <div className="border-t border-white/10 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-white/40 text-[10px] uppercase tracking-widest">
+        <div className="border-t border-white/10 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-white/40 text-xs uppercase tracking-widest">
           <p>&copy; {year} {brand.nameTh}. All rights reserved.</p>
           <div className="flex gap-4">
             <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>

@@ -16,7 +16,13 @@ import {
   Mail,
   MapPin,
   Star,
-  Send
+  Send,
+  User,
+  Upload,
+  ShieldCheck,
+  ChevronDown,
+  FileText,
+  Trash2
 } from 'lucide-react';
 import { BRANDS } from '@/config/brands';
 import { SiteHeader } from '@/components/layout/SiteHeader';
@@ -75,11 +81,34 @@ export default function CNRGroupPage() {
   const [currentHero, setCurrentHero] = useState(0);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [currentAward, setCurrentAward] = useState(0);
+  const AWARDS_PER_PAGE = 2;
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleNewsCount, setVisibleNewsCount] = useState(3);
+
+  // Report form state
+  const [reportFiles, setReportFiles] = useState<File[]>([]);
+  const [dragOver, setDragOver] = useState(false);
+
+  const handleFileDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    setReportFiles(prev => [...prev, ...files].slice(0, 5));
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setReportFiles(prev => [...prev, ...files].slice(0, 5));
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setReportFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   // Gallery: Combine static images with DB images
   const galleryTestimonials = useGallery('cnr_group', 'TESTIMONIALS');
@@ -104,13 +133,15 @@ export default function CNRGroupPage() {
     return () => clearInterval(timer);
   }, [activeTestimonials.length]);
 
-  // Auto-slide awards
+  // Auto-slide awards — advance one page at a time
   useEffect(() => {
+    if (!activeAwards.length) return;
+    const totalPages = Math.ceil(activeAwards.length / AWARDS_PER_PAGE);
     const timer = setInterval(() => {
-      setCurrentAward((prev) => (prev + 1) % activeAwards.length);
+      setCurrentAward((prev) => (prev + 1) % totalPages);
     }, 3500);
     return () => clearInterval(timer);
-  }, [activeAwards.length]);
+  }, [activeAwards.length, AWARDS_PER_PAGE]);
 
   // Fetch real news from API
   useEffect(() => {
@@ -302,64 +333,89 @@ export default function CNRGroupPage() {
           </div>
 
           {/* --- Awards --- */}
-          <section id="awards" className="cnr-section" style={{ background: 'var(--brand-primary)', paddingTop: '4rem', paddingBottom: '4rem' }}>
-            <div className="cnr-container">
-              <div className="text-center mb-10">
-                <p className="section-eyebrow" style={{ color: 'var(--brand-accent)' }}>AWARDS</p>
-                <h2 className="section-title" style={{ color: '#fff' }}>รางวัลและความภูมิใจ</h2>
-              </div>
-              
-              <div className="testimonial-slider-wrap" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                <button
-                  className="testimonial-slider-btn prev"
-                  onClick={() => setCurrentAward((prev) => (prev - 1 + activeAwards.length) % activeAwards.length)}
-                  style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}
-                >
-                  <ChevronLeft size={20} />
-                </button>
+          {(() => {
+            const totalPages = Math.ceil(activeAwards.length / AWARDS_PER_PAGE);
+            const pageAwards = activeAwards.slice(
+              currentAward * AWARDS_PER_PAGE,
+              currentAward * AWARDS_PER_PAGE + AWARDS_PER_PAGE,
+            );
+            return (
+              <section id="awards" className="cnr-section" style={{ background: 'var(--brand-primary)', paddingTop: '4rem', paddingBottom: '4rem' }}>
+                <div className="cnr-container">
+                  <div className="text-center mb-10">
+                    <p className="section-eyebrow" style={{ color: 'var(--brand-accent)' }}>AWARDS</p>
+                    <h2 className="section-title" style={{ color: '#fff' }}>รางวัลและความภูมิใจ</h2>
+                  </div>
 
-                <div style={{ overflow: 'hidden', padding: '0 1rem' }}>
-                  <div
-                    className="testimonial-slider-track"
-                    style={{ transform: `translateX(-${currentAward * 100}%)` }}
-                  >
-                    {activeAwards.map((src, i) => (
-                      <div key={i} className="testimonial-slide" style={{ padding: '1rem' }}>
-                        <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 border border-white/10 flex items-center justify-center aspect-video relative overflow-hidden group/award">
-                          <Image 
-                            src={src} 
-                            alt={`Award ${i + 1}`} 
-                            fill 
-                            className="object-contain p-4 group-hover/award:scale-110 transition-transform duration-500" 
+                  <div className="relative px-12">
+                    {/* Prev Button */}
+                    <button
+                      onClick={() => setCurrentAward((prev) => (prev - 1 + totalPages) % totalPages)}
+                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full flex items-center justify-center text-white border border-white/20 bg-white/10 hover:bg-white/25 backdrop-blur-sm transition-all"
+                      aria-label="Previous"
+                    >
+                      <ChevronLeft size={24} />
+                    </button>
+
+                    {/* Cards */}
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentAward}
+                        initial={{ opacity: 0, x: 40 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -40 }}
+                        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+                      >
+                        {pageAwards.map((src, i) => (
+                          <motion.div
+                            key={`${currentAward}-${i}`}
+                            whileHover={{ scale: 1.04, y: -4 }}
+                            className="relative overflow-hidden rounded-2xl cursor-pointer border-2 border-white/10 hover:border-[var(--brand-accent)] transition-colors duration-300 group/award shadow-lg"
+                            style={{ aspectRatio: '3/2' }}
                             onClick={() => setLightbox(src)}
-                          />
-                        </div>
-                      </div>
+                          >
+                            <Image
+                              src={src}
+                              alt={`Award ${currentAward * AWARDS_PER_PAGE + i + 1}`}
+                              fill
+                              className="object-cover group-hover/award:scale-110 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover/award:opacity-100 transition-opacity duration-300" />
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    </AnimatePresence>
+
+                    {/* Next Button */}
+                    <button
+                      onClick={() => setCurrentAward((prev) => (prev + 1) % totalPages)}
+                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full flex items-center justify-center text-white border border-white/20 bg-white/10 hover:bg-white/25 backdrop-blur-sm transition-all"
+                      aria-label="Next"
+                    >
+                      <ChevronRight size={24} />
+                    </button>
+                  </div>
+
+                  {/* Page Dots */}
+                  <div className="flex justify-center gap-2 mt-8">
+                    {Array.from({ length: totalPages }).map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentAward(i)}
+                        className={`rounded-full transition-all duration-300 ${
+                          currentAward === i
+                            ? 'w-8 h-2.5 bg-[var(--brand-accent)]'
+                            : 'w-2.5 h-2.5 bg-white/30 hover:bg-white/60'
+                        }`}
+                        aria-label={`Page ${i + 1}`}
+                      />
                     ))}
                   </div>
                 </div>
-
-                <button
-                  className="testimonial-slider-btn next"
-                  onClick={() => setCurrentAward((prev) => (prev + 1) % activeAwards.length)}
-                  style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}
-                >
-                  <ChevronRight size={20} />
-                </button>
-
-                <div className="testimonial-dots">
-                  {activeAwards.map((_, i) => (
-                    <button
-                      key={i}
-                      className={`testimonial-dot ${currentAward === i ? 'active' : ''}`}
-                      style={{ background: currentAward === i ? 'var(--brand-accent)' : 'rgba(255,255,255,0.3)' }}
-                      onClick={() => setCurrentAward(i)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
+              </section>
+            );
+          })()}
 
           {/* --- News --- */}
           <section id="news" className="cnr-section">
@@ -480,17 +536,83 @@ export default function CNRGroupPage() {
                   </div>
                 </div>
 
-                <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
-                  <h3 className="text-2xl font-bold mb-6">ส่งข้อความถึงเรา</h3>
-                  <form className="space-y-4">
+                <div className="report-form-card">
+                  <div className="report-form-header">
+                    <h3 className="report-form-title">รายงานปัญหา / ข้อเสนอแนะ</h3>
+                    <p className="report-form-subtitle">ศูนย์แจ้งปัญหาและข้อเสนอแนะ</p>
+                  </div>
+                  <form className="report-form">
                     <div className="grid md:grid-cols-2 gap-4">
-                      <input type="text" placeholder="ชื่อ-นามสกุล" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[var(--brand-primary)] focus:border-transparent outline-none" />
-                      <input type="tel" placeholder="เบอร์โทรศัพท์" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[var(--brand-primary)] focus:border-transparent outline-none" />
+                      <div className="report-input-wrap">
+                        <User size={18} className="report-input-icon" />
+                        <input type="text" placeholder="ชื่อ-นามสกุล" className="report-input" />
+                      </div>
+                      <div className="report-input-wrap">
+                        <Phone size={18} className="report-input-icon" />
+                        <input type="tel" placeholder="เบอร์โทรศัพท์" className="report-input" />
+                      </div>
                     </div>
-                    <input type="email" placeholder="อีเมล" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[var(--brand-primary)] focus:border-transparent outline-none" />
-                    <textarea rows={4} placeholder="รายละเอียด" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[var(--brand-primary)] focus:border-transparent outline-none"></textarea>
-                    <button className="w-full py-4 bg-[var(--brand-primary)] text-white font-bold rounded-xl shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2">
-                      ส่งข้อความ <Send size={20} />
+                    <div className="report-input-wrap">
+                      <Mail size={18} className="report-input-icon" />
+                      <input type="email" placeholder="อีเมล" className="report-input" />
+                    </div>
+                    <div className="report-select-wrap">
+                      <select className="report-select" defaultValue="">
+                        <option value="" disabled>เลือกประเภทของรายงาน (เช่น เทคนิค, การใช้งาน, ข้อเสนอแนะ)</option>
+                        <option value="technical">ปัญหาเทคนิค</option>
+                        <option value="usage">ปัญหาการใช้งาน</option>
+                        <option value="suggestion">ข้อเสนอแนะ</option>
+                        <option value="billing">ปัญหาด้านการเงิน / ใบแจ้งหนี้</option>
+                        <option value="other">อื่นๆ</option>
+                      </select>
+                      <ChevronDown size={18} className="report-select-icon" />
+                    </div>
+                    <textarea rows={4} placeholder="รายละเอียดปัญหา หรือ ข้อเสนอแนะ" className="report-textarea"></textarea>
+
+                    {/* File Upload Zone */}
+                    <div
+                      className={`report-upload-zone ${dragOver ? 'drag-over' : ''}`}
+                      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                      onDragLeave={() => setDragOver(false)}
+                      onDrop={handleFileDrop}
+                      onClick={() => document.getElementById('report-file-input')?.click()}
+                    >
+                      <input
+                        id="report-file-input"
+                        type="file"
+                        multiple
+                        accept="image/*,.pdf,.doc,.docx"
+                        className="hidden"
+                        onChange={handleFileSelect}
+                      />
+                      <Upload size={32} className="report-upload-icon" />
+                      <p className="report-upload-text">ลากและวางไฟล์ที่นี่ หรือ <span>คลิกเพื่อเลือกไฟล์</span></p>
+                      <p className="report-upload-hint">รองรับ: รูปภาพ, PDF, DOC (สูงสุด 5 ไฟล์)</p>
+                    </div>
+
+                    {/* Uploaded Files List */}
+                    {reportFiles.length > 0 && (
+                      <div className="report-files-list">
+                        {reportFiles.map((file, i) => (
+                          <div key={i} className="report-file-item">
+                            <FileText size={16} className="text-[var(--brand-primary)]" />
+                            <span className="report-file-name">{file.name}</span>
+                            <span className="report-file-size">{(file.size / 1024).toFixed(0)} KB</span>
+                            <button type="button" onClick={() => removeFile(i)} className="report-file-remove">
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="report-privacy">
+                      <ShieldCheck size={16} className="text-green-500 flex-shrink-0" />
+                      <span>ข้อมูลของคุณจะถูกเก็บเป็นความลับ</span>
+                    </div>
+
+                    <button type="submit" className="report-submit-btn">
+                      ส่งรายงาน <FileText size={20} />
                     </button>
                   </form>
                 </div>

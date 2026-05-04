@@ -170,3 +170,44 @@ model Post {
   @@index([slug])
   @@map("posts")
 }
+
+// ============================================================
+// Admin & Security Models
+// ============================================================
+
+enum AdminRole {
+  SUPER_ADMIN // เข้าถึงได้ทุกระบบและจัดการแอดมินคนอื่นได้
+  EDITOR      // จัดการเนื้อหา ข่าวสาร บทความ ได้เท่านั้น
+  VIEWER      // ดูข้อมูลและสถิติได้อย่างเดียว
+}
+
+model Admin {
+  id        String      @id @default(cuid())
+  email     String      @unique
+  password  String      // เก็บรหัสผ่านที่ผ่านการ Hash (bcrypt)
+  name      String
+  role      AdminRole   @default(EDITOR)
+  isActive  Boolean     @default(true)
+  lastLogin DateTime?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  auditLogs AuditLog[]
+
+  @@map("admins")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  action    String   // เช่น "LOGIN_SUCCESS", "LOGIN_FAILED"
+  ipAddress String?  // เก็บ IP Address ที่ใช้เข้าใช้งาน
+  userAgent String?  // ข้อมูล Browser/Device
+  details   Json?    // เก็บข้อมูลเพิ่มเติม (ถ้ามี)
+  createdAt DateTime @default(now())
+
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId, action])
+  @@map("audit_logs")
+}

@@ -7,6 +7,7 @@ import {
   Upload, X, Trash2, Pencil, Check, ChevronDown,
   GripVertical, AlertCircle,
 } from 'lucide-react';
+import AdminLayout from '@/components/admin/AdminLayout';
 
 // ─── Types ─────────────────────────────────────────────────────
 interface GalleryImage {
@@ -48,31 +49,7 @@ const SECTIONS_BY_SITE: Record<string, { value: string; label: string }[]> = {
   ],
 };
 
-// ─── Sidebar ───────────────────────────────────────────────────
-function AdminSidebar() {
-  return (
-    <aside className="w-64 bg-white border-r border-gray-100 flex flex-col py-8 px-4 gap-1 shrink-0">
-      <div className="px-4 mb-8">
-        <h1 className="font-black text-xl text-gray-900">CNR Admin</h1>
-        <p className="text-xs text-gray-400 mt-1">Content Management System</p>
-      </div>
-      {[
-        { href: '/admin',          icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
-        { href: '/admin/posts',    icon: <FileText size={18} />,        label: 'จัดการข่าว' },
-        { href: '/admin/posts/new',icon: <PlusCircle size={18} />,      label: 'เพิ่มข่าวใหม่' },
-        { href: '/admin/gallery',  icon: <Images size={18} />,          label: 'จัดการรูปภาพ' },
-      ].map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors font-medium text-sm"
-        >
-          {item.icon} {item.label}
-        </Link>
-      ))}
-    </aside>
-  );
-}
+
 
 // ─── Drag-and-drop Upload Zone ─────────────────────────────────
 function UploadZone({ onFiles }: { onFiles: (files: File[]) => void }) {
@@ -336,12 +313,9 @@ export default function GalleryAdminPage() {
   const secMeta   = sections.find((s) => s.value === selectedSection);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <AdminSidebar />
-
-      <div className="flex-1 p-8 overflow-auto">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
+    <AdminLayout>
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
@@ -515,7 +489,6 @@ export default function GalleryAdminPage() {
             )}
           </div>
         </div>
-      </div>
-    </div>
+    </AdminLayout>
   );
 }

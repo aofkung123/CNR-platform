@@ -11,6 +11,8 @@ import {
   ChevronRight, Users, BarChart2, Images,
 } from 'lucide-react';
 
+import AdminLayout from '@/components/admin/AdminLayout';
+
 // ─── Types ────────────────────────────────────────────────────
 interface DeptActivity { department: string; totalViews: number; totalPosts: number; }
 interface TrendingPost { id: string; title: string; department: string; category: string; viewCount: number; publishedAt: string; }
@@ -88,33 +90,9 @@ export default function AdminDashboard() {
   const published  = stats?.statusSummary.find((s) => s.status === 'PUBLISHED')?.count ?? 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-100 flex flex-col py-8 px-4 gap-1 shrink-0">
-        <div className="px-4 mb-8">
-          <h1 className="font-black text-xl text-gray-900">CNR Admin</h1>
-          <p className="text-xs text-gray-400 mt-1">News Management System</p>
-        </div>
-        {[
-          { href: '/admin',          icon: <LayoutDashboard size={18} />, label: 'Dashboard'   },
-          { href: '/admin/posts',    icon: <FileText size={18} />,        label: 'จัดการข่าว' },
-          { href: '/admin/posts/new',icon: <PlusCircle size={18} />,      label: 'เพิ่มข่าวใหม่' },
-          { href: '/admin/gallery',  icon: <Images size={18} />,          label: 'จัดการรูปภาพ' },
-        ].map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors font-medium text-sm"
-          >
-            {item.icon} {item.label}
-          </Link>
-        ))}
-      </aside>
-
-      {/* Content */}
-      <div className="flex-1 p-8 overflow-auto">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+    <AdminLayout>
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
               <p className="text-gray-500 mt-1">ภาพรวมระบบข่าวสาร CNR GROUP</p>
@@ -254,7 +232,6 @@ export default function AdminDashboard() {
             </>
           )}
         </div>
-      </div>
-    </div>
+    </AdminLayout>
   );
 }

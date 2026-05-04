@@ -34,7 +34,7 @@ COPY --from=builder /app/packages/database/dist ./packages/database/dist
 COPY --from=builder /app/packages/database/package.json ./packages/database/package.json
 COPY --from=builder /app/packages/database/prisma ./prisma
 
-EXPOSE 4000
+EXPOSE 3000
 
 # Run db push then start the app
 CMD ["sh", "-c", "npx prisma db push --accept-data-loss && node dist/index.js"]

@@ -6,6 +6,7 @@ import {
   Plus, Pencil, Trash2, Search, ChevronLeft, ChevronRight,
   Eye, FileText,
 } from 'lucide-react';
+import AdminLayout from '@/components/admin/AdminLayout';
 
 // ─── Types ────────────────────────────────────────────────────
 interface Post {
@@ -79,34 +80,10 @@ export default function AdminPostsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-100 flex flex-col py-8 px-4 gap-1 shrink-0">
-        <div className="px-4 mb-8">
-          <h1 className="font-black text-xl text-gray-900">CNR Admin</h1>
-          <p className="text-xs text-gray-400 mt-1">News Management System</p>
-        </div>
-        {[
-          { href: '/admin',           label: 'Dashboard',       icon: '📊' },
-          { href: '/admin/posts',     label: 'จัดการข่าว',   icon: '📰' },
-          { href: '/admin/posts/new', label: 'เพิ่มข่าวใหม่', icon: '✏️' },
-          { href: '/admin/gallery',   label: 'จัดการรูปภาพ', icon: '🖼️' },
-        ].map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors font-medium text-sm"
-          >
-            <span>{item.icon}</span> {item.label}
-          </Link>
-        ))}
-      </aside>
-
-      {/* Content */}
-      <div className="flex-1 p-8 overflow-auto">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+    <AdminLayout>
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                 <FileText size={24} className="text-blue-600" /> จัดการข่าวสาร
@@ -155,8 +132,8 @@ export default function AdminPostsPage() {
           </div>
 
           {/* Table */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden overflow-x-auto">
+            <table className="w-full text-sm min-w-[800px]">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
                   {['หัวข้อ', 'แผนก', 'ประเภท', 'สถานะ', 'วิว', 'วันที่', 'จัดการ'].map((h) => (
@@ -263,7 +240,6 @@ export default function AdminPostsPage() {
             )}
           </div>
         </div>
-      </div>
-    </div>
+    </AdminLayout>
   );
 }
