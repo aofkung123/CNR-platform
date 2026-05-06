@@ -11,50 +11,53 @@
    ============================================================ */
 :root,
 [data-brand="cnr_group"] {
-  --brand-primary: #0B1F4B;       /* Navy Blue */
-  --brand-primary-light: #1A3A7A; /* Lighter Navy */
-  --brand-primary-dark: #070F25;  /* Darker Navy */
+  --brand-primary: #0B1F4B;
+  /* Navy Blue */
+  --brand-primary-light: #1A3A7A;
+  /* Lighter Navy */
+  --brand-primary-dark: #070F25;
+  /* Darker Navy */
   --brand-accent: #F97316;
 
   --font-prompt: 'Prompt', sans-serif;
 
   /* UI */
-  --foreground:         #1A1A2E;
-  --muted-foreground:   #6B7280;
-  --background:         #FFFFFF;
-  --section-bg:         #F8FAFC;
-  --card-bg:            #FFFFFF;
-  --border:             #E5E7EB;
-  --shadow:             0 4px 24px rgba(0,0,0,0.08);
-  --radius:             0.75rem;
+  --foreground: #1A1A2E;
+  --muted-foreground: #6B7280;
+  --background: #FFFFFF;
+  --section-bg: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --border: #E5E7EB;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --radius: 0.75rem;
 }
 
 [data-brand="cac_audit"] {
-  --brand-primary:       #1E5FA8;
+  --brand-primary: #1E5FA8;
   --brand-primary-light: #2D7DD2;
-  --brand-primary-dark:  #154080;
-  --brand-accent:        #F97316;
+  --brand-primary-dark: #154080;
+  --brand-accent: #F97316;
 }
 
 [data-brand="nr_accounting"] {
-  --brand-primary:       #1B6B3A;
+  --brand-primary: #1B6B3A;
   --brand-primary-light: #2E9959;
-  --brand-primary-dark:  #114828;
-  --brand-accent:        #10B981;
+  --brand-primary-dark: #114828;
+  --brand-accent: #10B981;
 }
 
 [data-brand="nr_advisory"] {
-  --brand-primary:       #3478AD;
+  --brand-primary: #3478AD;
   --brand-primary-light: #4A9BD4;
-  --brand-primary-dark:  #235A8A;
-  --brand-accent:        #F59E0B;
+  --brand-primary-dark: #235A8A;
+  --brand-accent: #F59E0B;
 }
 
 [data-brand="model_mix"] {
-  --brand-primary:       #EA6B1F;
+  --brand-primary: #EA6B1F;
   --brand-primary-light: #F4893F;
-  --brand-primary-dark:  #C45510;
-  --brand-accent:        #FBBF24;
+  --brand-primary-dark: #C45510;
+  --brand-accent: #FBBF24;
 }
 
 /* ============================================================
@@ -77,7 +80,12 @@
     font-family: var(--font-prompt), sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-prompt), sans-serif;
     font-weight: 700;
   }
@@ -87,6 +95,7 @@
    Component Utilities
    ============================================================ */
 @layer components {
+
   /* ── Container ─────────────────────────────────────── */
   .cnr-container {
     @apply mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl w-full;
@@ -117,14 +126,12 @@
 
   /* ── Buttons ───────────────────────────────────────── */
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white
-           transition-all duration-200 hover:brightness-110 hover:shadow-lg active:scale-95;
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition-all duration-200 hover:brightness-110 hover:shadow-lg active:scale-95;
     background-color: var(--brand-primary);
   }
 
   .btn-outline {
-    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold
-           border-2 transition-all duration-200 hover:text-white active:scale-95;
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold border-2 transition-all duration-200 hover:text-white active:scale-95;
     border-color: var(--brand-primary);
     color: var(--brand-primary);
   }
@@ -135,41 +142,43 @@
 
   /* ── Card ──────────────────────────────────────────── */
   .cnr-card {
-    @apply rounded-2xl bg-white p-6 transition-all duration-300
-           hover:-translate-y-1 hover:shadow-xl;
+    @apply rounded-2xl bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
   }
 
   /* ── Navbar ────────────────────────────────────────── */
   .site-header {
-    @apply sticky top-0 z-50 w-full py-6 px-4 sm:px-6
-           bg-white border-b border-[var(--border)];
+    @apply sticky top-0 z-50 w-full py-0 px-0 sm:px-0 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.04)];
     transition: box-shadow 0.3s;
   }
 
-  .site-header > .cnr-container {
+  .site-header>.cnr-container {
     position: relative;
   }
 
-  .site-header > .cnr-container > nav {
+  .site-header>.cnr-container>nav {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
   }
 
   .site-header.scrolled {
-    @apply shadow-md;
+    @apply shadow-[0_4px_24px_rgba(0,0,0,0.08)];
   }
 
   .nav-link {
-    @apply text-base font-medium text-[var(--foreground)] px-4 py-2 rounded-lg
-           transition-colors duration-200 hover:text-[var(--brand-primary)] hover:bg-[var(--section-bg)];
+    @apply relative text-base font-semibold text-[var(--brand-primary)] px-1 py-2 transition-all duration-300;
   }
 
-  .nav-link.active {
-    color: var(--brand-primary);
-    font-weight: 600;
+  .nav-link::after {
+    content: '';
+    @apply absolute left-0 bottom-0 w-0 h-[3px] bg-[var(--brand-accent)] transition-all duration-300 rounded-full;
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    @apply w-full;
   }
 
   /* ── Hero Section ──────────────────────────────────── */
@@ -194,17 +203,13 @@
   }
 
   .speed-dial__toggle {
-    @apply w-14 h-14 rounded-full text-white flex items-center justify-center
-           shadow-lg transition-all duration-300 hover:scale-110;
+    @apply w-14 h-14 rounded-full text-white flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110;
     background-color: var(--brand-primary);
   }
 
   /* ── Form ──────────────────────────────────────────── */
   .form-input {
-    @apply w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-white
-           text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]
-           outline-none transition-all duration-200
-           focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)];
+    @apply w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-white text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] outline-none transition-all duration-200 focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)];
   }
 
   /* ── Footer ────────────────────────────────────────── */

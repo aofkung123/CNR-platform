@@ -12,7 +12,9 @@ import { newsRouter } from './routes/news';
 import { postsRouter, statsRouter } from './routes/posts';
 import { galleryRouter } from './routes/gallery';
 import adminRouter from './routes/admin';
+import { reportRouter } from './routes/reports';
 import { errorHandler } from './middleware/errorHandler';
+import path from 'path';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
@@ -43,6 +45,10 @@ app.use('/api/v1/posts', postsRouter);
 app.use('/api/v1/stats', statsRouter);
 app.use('/api/v1/gallery', galleryRouter);
 app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/reports', reportRouter);
+
+// Serve uploaded report attachments
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // ─── 404 ──────────────────────────────────────────────────
 app.use((_req, res) => {

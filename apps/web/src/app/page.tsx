@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,6 +29,7 @@ import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 // import { NEWS } from '@/data/news'; // Removed static mock
 import { useGallery } from '@/lib/useGallery';
+import ReCAPTCHA from 'react-google-recaptcha';
 import './cnrgroup.css';
 
 // --- Configuration Data (Extracted from legacy js/config.js) ---
@@ -88,34 +89,92 @@ export default function CNRGroupPage() {
   const [loading, setLoading] = useState(true);
   const [visibleNewsCount, setVisibleNewsCount] = useState(3);
 
-  // Report form state
+  // ── Report form state ──────────────────────────────────────
   const [reportFiles, setReportFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
+  const [reportForm, setReportForm] = useState({ name: '', phone: '', email: '', category: '', message: '' });
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [fileErrors, setFileErrors] = useState<string[]>([]);
+  const [captchaValue, setCaptchaValue] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '';
+  const isDevMode = !siteKey;
+
+  const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'application/pdf', 'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+  const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
+
+  const validateAndAddFiles = useCallback((incoming: File[]) => {
+    const errs: string[] = [];
+    const valid: File[] = [];
+    for (const f of incoming) {
+      if (!ALLOWED_TYPES.includes(f.type)) {
+        errs.push(`${f.name}: ประเภทไฟล์ไม่รองรับ (รองรับ PNG, JPG, PDF, DOC เท่านั้น)`);
+        continue;
+      }
+      if (f.size > MAX_SIZE) {
+        errs.push(`${f.name}: ไฟล์ใหญ่เกิน 2 MB`);
+        continue;
+      }
+      valid.push(f);
+    }
+    setFileErrors(errs);
+    setReportFiles(prev => [...prev, ...valid].slice(0, 5));
+  }, []);
 
   const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    const files = Array.from(e.dataTransfer.files);
-    setReportFiles(prev => [...prev, ...files].slice(0, 5));
+    validateAndAddFiles(Array.from(e.dataTransfer.files));
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setReportFiles(prev => [...prev, ...files].slice(0, 5));
-    }
+    if (e.target.files) validateAndAddFiles(Array.from(e.target.files));
   };
 
   const removeFile = (index: number) => {
     setReportFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleReportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // ถ้าไม่ได้อยู่ใน dev-bypass ต้องมี captchaValue จาก widget
+    if (!isDevMode && !captchaValue) {
+      alert('กรุณาติ๊กถูกที่ช่อง reCAPTCHA');
+      return;
+    }
+    setSubmitStatus('loading');
+    try {
+      // ใน dev mode (ไม่มี site key) ส่ง token พิเศษ ให้ backend ยอมรับ
+      const token = isDevMode ? 'dev-bypass' : captchaValue!;
+      const fd = new FormData();
+      fd.append('name', reportForm.name);
+      fd.append('phone', reportForm.phone);
+      fd.append('email', reportForm.email);
+      fd.append('category', reportForm.category);
+      fd.append('message', reportForm.message);
+      fd.append('brand', 'cnr_group');
+      fd.append('recaptchaToken', token);
+      reportFiles.forEach(f => fd.append('attachments', f));
+
+      const res = await fetch('/api/v1/reports', { method: 'POST', body: fd });
+      if (!res.ok) throw new Error(await res.text());
+      setSubmitStatus('success');
+      setReportForm({ name: '', phone: '', email: '', category: '', message: '' });
+      setReportFiles([]);
+      setCaptchaValue(null);
+      recaptchaRef.current?.reset();
+    } catch {
+      setSubmitStatus('error');
+    }
+  };
+
   // Gallery: Combine static images with DB images
   const galleryTestimonials = useGallery('cnr_group', 'TESTIMONIALS');
-  const galleryAwards       = useGallery('cnr_group', 'AWARDS');
-  
-  const activeTestimonials  = [...TESTIMONIALS, ...galleryTestimonials.map(g => g.imageUrl)];
-  const activeAwards        = [...AWARDS, ...galleryAwards.map(g => g.imageUrl)];
+  const galleryAwards = useGallery('cnr_group', 'AWARDS');
+
+  const activeTestimonials = [...TESTIMONIALS, ...galleryTestimonials.map(g => g.imageUrl)];
+  const activeAwards = [...AWARDS, ...galleryAwards.map(g => g.imageUrl)];
 
   // Auto-slide hero
   useEffect(() => {
@@ -403,11 +462,10 @@ export default function CNRGroupPage() {
                       <button
                         key={i}
                         onClick={() => setCurrentAward(i)}
-                        className={`rounded-full transition-all duration-300 ${
-                          currentAward === i
+                        className={`rounded-full transition-all duration-300 ${currentAward === i
                             ? 'w-8 h-2.5 bg-[var(--brand-accent)]'
                             : 'w-2.5 h-2.5 bg-white/30 hover:bg-white/60'
-                        }`}
+                          }`}
                         aria-label={`Page ${i + 1}`}
                       />
                     ))}
@@ -478,14 +536,14 @@ export default function CNRGroupPage() {
               {/* View More / Show Less Button */}
               {posts.length > 3 && (
                 <div className="mt-12 text-center">
-                  <button 
+                  <button
                     onClick={() => setVisibleNewsCount(visibleNewsCount > 3 ? 3 : posts.length)}
                     className="btn-outline px-10 group"
                   >
                     {visibleNewsCount > 3 ? 'ย่อข่าวสารลง' : 'ดูข่าวสารเพิ่มเติม'}
-                    <ArrowRight 
-                      size={18} 
-                      className={`transition-transform duration-300 ${visibleNewsCount > 3 ? '-rotate-90' : 'group-hover:translate-x-1'}`} 
+                    <ArrowRight
+                      size={18}
+                      className={`transition-transform duration-300 ${visibleNewsCount > 3 ? '-rotate-90' : 'group-hover:translate-x-1'}`}
                     />
                   </button>
                 </div>
@@ -541,80 +599,122 @@ export default function CNRGroupPage() {
                     <h3 className="report-form-title">รายงานปัญหา / ข้อเสนอแนะ</h3>
                     <p className="report-form-subtitle">ศูนย์แจ้งปัญหาและข้อเสนอแนะ</p>
                   </div>
-                  <form className="report-form">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="report-input-wrap">
-                        <User size={18} className="report-input-icon" />
-                        <input type="text" placeholder="ชื่อ-นามสกุล" className="report-input" />
+
+                  {submitStatus === 'success' ? (
+                    <div className="flex flex-col items-center gap-3 py-10 text-center">
+                      <ShieldCheck size={48} className="text-green-500" />
+                      <p className="text-xl font-bold text-gray-800">ส่งรายงานสำเร็จ!</p>
+                      <p className="text-sm text-gray-500">ทีมงานจะตรวจสอบและติดต่อกลับโดยเร็วที่สุด</p>
+                      <button onClick={() => setSubmitStatus('idle')} className="report-submit-btn mt-4" style={{ width: 'auto', padding: '0.6rem 2rem' }}>ส่งรายงานใหม่</button>
+                    </div>
+                  ) : (
+                    <form className="report-form" onSubmit={handleReportSubmit}>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="report-input-wrap">
+                          <User size={18} className="report-input-icon" />
+                          <input type="text" placeholder="ชื่อ-นามสกุล" className="report-input" required
+                            value={reportForm.name} onChange={e => setReportForm(p => ({ ...p, name: e.target.value }))} />
+                        </div>
+                        <div className="report-input-wrap">
+                          <Phone size={18} className="report-input-icon" />
+                          <input type="tel" placeholder="เบอร์โทรศัพท์" className="report-input" required
+                            value={reportForm.phone} onChange={e => setReportForm(p => ({ ...p, phone: e.target.value }))} />
+                        </div>
                       </div>
                       <div className="report-input-wrap">
-                        <Phone size={18} className="report-input-icon" />
-                        <input type="tel" placeholder="เบอร์โทรศัพท์" className="report-input" />
+                        <Mail size={18} className="report-input-icon" />
+                        <input type="email" placeholder="อีเมล" className="report-input" required
+                          value={reportForm.email} onChange={e => setReportForm(p => ({ ...p, email: e.target.value }))} />
                       </div>
-                    </div>
-                    <div className="report-input-wrap">
-                      <Mail size={18} className="report-input-icon" />
-                      <input type="email" placeholder="อีเมล" className="report-input" />
-                    </div>
-                    <div className="report-select-wrap">
-                      <select className="report-select" defaultValue="">
-                        <option value="" disabled>เลือกประเภทของรายงาน (เช่น เทคนิค, การใช้งาน, ข้อเสนอแนะ)</option>
-                        <option value="technical">ปัญหาเทคนิค</option>
-                        <option value="usage">ปัญหาการใช้งาน</option>
-                        <option value="suggestion">ข้อเสนอแนะ</option>
-                        <option value="billing">ปัญหาด้านการเงิน / ใบแจ้งหนี้</option>
-                        <option value="other">อื่นๆ</option>
-                      </select>
-                      <ChevronDown size={18} className="report-select-icon" />
-                    </div>
-                    <textarea rows={4} placeholder="รายละเอียดปัญหา หรือ ข้อเสนอแนะ" className="report-textarea"></textarea>
+                      <div className="report-select-wrap">
+                        <select className="report-select" required value={reportForm.category}
+                          onChange={e => setReportForm(p => ({ ...p, category: e.target.value }))}>
+                          <option value="" disabled>เลือกประเภทของรายงาน (เช่น เทคนิค, การใช้งาน, ข้อเสนอแนะ)</option>
+                          <option value="technical">ปัญหาเทคนิค</option>
+                          <option value="usage">ปัญหาการใช้งาน</option>
+                          <option value="suggestion">ข้อเสนอแนะ</option>
+                          <option value="billing">ปัญหาด้านการเงิน / ใบแจ้งหนี้</option>
+                          <option value="other">อื่นๆ</option>
+                        </select>
+                        <ChevronDown size={18} className="report-select-icon" />
+                      </div>
+                      <textarea rows={4} placeholder="รายละเอียดปัญหา หรือ ข้อเสนอแนะ (ใส่ข้อความมากกว่า 10 คำ)" className="report-textarea" required
+                        value={reportForm.message} onChange={e => setReportForm(p => ({ ...p, message: e.target.value }))} />
 
-                    {/* File Upload Zone */}
-                    <div
-                      className={`report-upload-zone ${dragOver ? 'drag-over' : ''}`}
-                      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                      onDragLeave={() => setDragOver(false)}
-                      onDrop={handleFileDrop}
-                      onClick={() => document.getElementById('report-file-input')?.click()}
-                    >
-                      <input
-                        id="report-file-input"
-                        type="file"
-                        multiple
-                        accept="image/*,.pdf,.doc,.docx"
-                        className="hidden"
-                        onChange={handleFileSelect}
-                      />
-                      <Upload size={32} className="report-upload-icon" />
-                      <p className="report-upload-text">ลากและวางไฟล์ที่นี่ หรือ <span>คลิกเพื่อเลือกไฟล์</span></p>
-                      <p className="report-upload-hint">รองรับ: รูปภาพ, PDF, DOC (สูงสุด 5 ไฟล์)</p>
-                    </div>
+                      {/* File Upload Zone */}
+                      <div
+                        className={`report-upload-zone ${dragOver ? 'drag-over' : ''}`}
+                        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                        onDragLeave={() => setDragOver(false)}
+                        onDrop={handleFileDrop}
+                        onClick={() => document.getElementById('report-file-input')?.click()}
+                      >
+                        <input
+                          id="report-file-input"
+                          type="file"
+                          multiple
+                          accept=".png,.jpg,.jpeg,.pdf,.doc,.docx"
+                          className="hidden"
+                          onChange={handleFileSelect}
+                        />
+                        <Upload size={32} className="report-upload-icon" />
+                        <p className="report-upload-text">ลากและวางไฟล์ที่นี่ หรือ <span>คลิกเพื่อเลือกไฟล์</span></p>
+                        <p className="report-upload-hint">PNG, JPG, PDF, DOC · สูงสุด 2 MB ต่อไฟล์ · สูงสุด 5 ไฟล์</p>
+                      </div>
 
-                    {/* Uploaded Files List */}
-                    {reportFiles.length > 0 && (
-                      <div className="report-files-list">
-                        {reportFiles.map((file, i) => (
-                          <div key={i} className="report-file-item">
-                            <FileText size={16} className="text-[var(--brand-primary)]" />
-                            <span className="report-file-name">{file.name}</span>
-                            <span className="report-file-size">{(file.size / 1024).toFixed(0)} KB</span>
-                            <button type="button" onClick={() => removeFile(i)} className="report-file-remove">
-                              <Trash2 size={14} />
-                            </button>
+                      {/* File errors */}
+                      {fileErrors.length > 0 && (
+                        <div className="space-y-1">
+                          {fileErrors.map((err, i) => (
+                            <p key={i} className="text-xs text-red-500 flex items-center gap-1">⚠ {err}</p>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Uploaded Files List */}
+                      {reportFiles.length > 0 && (
+                        <div className="report-files-list">
+                          {reportFiles.map((file, i) => (
+                            <div key={i} className="report-file-item">
+                              <FileText size={16} className="text-[var(--brand-primary)]" />
+                              <span className="report-file-name">{file.name}</span>
+                              <span className="report-file-size">{(file.size / 1024).toFixed(0)} KB</span>
+                              <button type="button" onClick={() => removeFile(i)} className="report-file-remove">
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex justify-center my-4">
+                        {isDevMode ? (
+                          <div className="w-full px-4 py-3 rounded-xl border border-dashed border-amber-400 bg-amber-50 text-amber-700 text-xs text-center">
+                            🔧 <strong>Dev Mode:</strong> reCAPTCHA ถูก bypass อัตโนมัติ (ไม่มี Site Key)
                           </div>
-                        ))}
+                        ) : (
+                          <ReCAPTCHA
+                            ref={recaptchaRef}
+                            sitekey={siteKey}
+                            onChange={(val) => setCaptchaValue(val)}
+                          />
+                        )}
                       </div>
-                    )}
 
-                    <div className="report-privacy">
-                      <ShieldCheck size={16} className="text-green-500 flex-shrink-0" />
-                      <span>ข้อมูลของคุณจะถูกเก็บเป็นความลับ</span>
-                    </div>
+                      <div className="report-privacy">
+                        <ShieldCheck size={16} className="text-green-500 flex-shrink-0" />
+                        <span>ข้อมูลของคุณจะถูกเก็บเป็นความลับ และได้รับการป้องกันด้วย reCAPTCHA</span>
+                      </div>
 
-                    <button type="submit" className="report-submit-btn">
-                      ส่งรายงาน <FileText size={20} />
-                    </button>
-                  </form>
+                      {submitStatus === 'error' && (
+                        <p className="text-sm text-red-500 text-center">เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</p>
+                      )}
+
+                      <button type="submit" className="report-submit-btn" disabled={submitStatus === 'loading'}>
+                        {submitStatus === 'loading' ? 'กำลังส่ง...' : <>ส่งรายงาน <FileText size={20} /></>}
+                      </button>
+                    </form>
+                  )}
                 </div>
               </div>
             </div>

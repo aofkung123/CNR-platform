@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutDashboard, FileText, PlusCircle, Images, Menu, X
+  LayoutDashboard, FileText, PlusCircle, Images, Menu, X, MessageSquareWarning
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -12,10 +12,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/admin',          icon: <LayoutDashboard size={18} />, label: 'Dashboard'   },
-    { href: '/admin/posts',    icon: <FileText size={18} />,        label: 'จัดการข่าว' },
-    { href: '/admin/posts/new',icon: <PlusCircle size={18} />,      label: 'เพิ่มข่าวใหม่' },
-    { href: '/admin/gallery',  icon: <Images size={18} />,          label: 'จัดการรูปภาพ' },
+    { href: '/admin',          icon: <LayoutDashboard size={18} />,        label: 'Dashboard'       },
+    { href: '/admin/posts',    icon: <FileText size={18} />,              label: 'จัดการข่าว'       },
+    { href: '/admin/posts/new',icon: <PlusCircle size={18} />,            label: 'เพิ่มข่าวใหม่'    },
+    { href: '/admin/gallery',  icon: <Images size={18} />,               label: 'จัดการรูปภาพ'    },
+    { href: '/admin/reports',  icon: <MessageSquareWarning size={18} />, label: 'รายงานปัญหา' },
   ];
 
   return (

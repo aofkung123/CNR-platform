@@ -26,6 +26,9 @@ RUN npx prisma generate --schema=./packages/database/prisma/schema.prisma
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
+ARG NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+ENV NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+
 # 6. Build Web app (Next.js Standalone)
 RUN npx turbo run build --filter=@cnr/web...
 

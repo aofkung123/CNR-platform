@@ -35,7 +35,7 @@ export function SiteHeader({ brand }: SiteHeaderProps) {
       className={`site-header ${scrolled ? 'scrolled' : ''}`}
       id="top"
     >
-      <div className="cnr-container flex items-center justify-between">
+      <div className="cnr-container flex items-center justify-between h-24">
         {/* Logo */}
         <Link href="/" className="flex-shrink-0" aria-label={brand.name}>
           <Image
@@ -43,13 +43,13 @@ export function SiteHeader({ brand }: SiteHeaderProps) {
             alt={brand.name}
             width={220}
             height={72}
-            className="h-16 w-auto object-contain"
+            className="h-16 lg:h-20 w-auto object-contain"
             priority
           />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1" aria-label="เมนูหลัก">
+        <nav className="hidden lg:flex items-center gap-8" aria-label="เมนูหลัก">
           {NAV_LINKS.map((link) => (
             <a key={link.href} href={link.href} className="nav-link">
               {link.label}
@@ -59,7 +59,7 @@ export function SiteHeader({ brand }: SiteHeaderProps) {
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden p-2 rounded-lg text-[var(--foreground)] hover:bg-[var(--section-bg)]"
+          className="lg:hidden p-2 rounded-lg text-[var(--foreground)] hover:bg-[var(--section-bg)]"
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? 'ปิดเมนู' : 'เปิดเมนู'}
           aria-expanded={isOpen}
@@ -71,7 +71,7 @@ export function SiteHeader({ brand }: SiteHeaderProps) {
       {/* Mobile Menu */}
       {isOpen && (
         <nav
-          className="md:hidden border-t border-[var(--border)] bg-white px-4 pb-4 pt-2 flex flex-col gap-1"
+          className="lg:hidden border-t border-[var(--border)] bg-white px-4 pb-4 pt-2 flex flex-col gap-1"
           aria-label="เมนูมือถือ"
         >
           {NAV_LINKS.map((link) => (

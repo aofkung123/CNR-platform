@@ -90,6 +90,35 @@ model ContactSubmission {
 }
 
 // ============================================================
+// ReportSubmission Model — เก็บรายงานปัญหา / ข้อเสนอแนะ
+// ============================================================
+
+enum ReportCategory {
+  technical    // ปัญหาเทคนิค
+  usage        // ปัญหาการใช้งาน
+  suggestion   // ข้อเสนอแนะ
+  billing      // ปัญหาด้านการเงิน
+  other        // อื่นๆ
+}
+
+model ReportSubmission {
+  id          String         @id @default(cuid())
+  name        String
+  phone       String
+  email       String
+  category    ReportCategory
+  message     String         @db.Text
+  attachments String?        @db.Text   // JSON array of attachment URLs
+  brand       CompanyBrand
+  isRead      Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+
+  @@index([brand, isRead])
+  @@index([category])
+  @@map("report_submissions")
+}
+
+// ============================================================
 // NewsArticle Model — บทความ/ข่าวสาร (legacy simple model)
 // ============================================================
 

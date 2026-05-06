@@ -114,8 +114,8 @@ export default function AdvisoryPage() {
                   ))}
                 </ul>
               </div>
-              <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
-                <Image src="/images/advisory/environmental-policy.jpg" alt="Environmental Policy" fill className="object-cover" />
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-white bg-white">
+                <Image src="/images/advisory/environmental-policy.jpg" alt="Environmental Policy" width={800} height={1131} className="w-full h-auto object-contain" />
               </div>
             </div>
           </div>
